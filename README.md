@@ -30,3 +30,6 @@ Tallet is a backend-focused personal finance management tool that allows users t
 - **AI Insights**: OpenAI API integration
 - **Testing**: Jest and Supertest
 - **Deployment**: Docker, Render/AWS
+
+
+- Tashrique Ahmed
