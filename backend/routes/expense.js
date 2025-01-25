@@ -29,8 +29,18 @@ router.post("/", verifyToken, async (req, res) => {
 
 // Get all expenses
 router.get("/", verifyToken, async (req, res) => {
+    const { category, minAmount, maxAmount, startDate, endDate } = req.query;
+    const query = { userId: req.user.id };
+
+    // Add filters to the query
+    if (category) query.category = category;
+    if (minAmount) query.amount = { $gte: minAmount };
+    if (maxAmount) query.amount = { ...query.amount, $lte: maxAmount };
+    if (startDate) query.date = { $gte: new Date(startDate) };
+    if (endDate) query.date = { ...query.date, $lte: new Date(endDate) };
+
     try {
-        const expenses = await Expense.find({ userId: req.user.id });
+        const expenses = await Expense.find(query);
         res.status(200).json(expenses);
     } catch (error) {
         res.status(500).json({ error: "Server error" });

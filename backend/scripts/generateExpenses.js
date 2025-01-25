@@ -7,7 +7,7 @@ const Expense = require('../models/Expense');
 dotenv.config();
 
 const generateExpenses = async (num) => {
-    await mongoose.connect(process.env.MONO_URI);
+    await mongoose.connect(process.env.MONGO_URI);
 
     const users = await User.find(); // Fetch all users
     if (!users.length) {
