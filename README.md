@@ -6,20 +6,26 @@ Tallet is a backend-focused personal finance management tool that allows users t
 ---
 
 ## Features
-- **User Authentication**: Secure user registration and login using JWT.
-- **Bank Transaction Sync**: Fetch and sync expenses directly from TD Bank and other financial institutions using Plaid.
-- **Expense Management**:
-  - Add, edit, and delete expenses.
-  - Categorize expenses for better organization.
-- **AI Insights**:
-  - Analyze spending habits and suggest areas for saving.
-  - Monthly spending summaries and trend predictions.
-- **Advanced Filtering**:
-  - Query expenses by date, category, or amount.
-  - Sorting and pagination for large datasets.
-- **Data Export**: Export expenses as CSV or PDF.
-- **Role-Based Access Control (RBAC)**: Admin and regular user permissions.
-- **Scalable Architecture**: Built for performance and scalability.
+### Current Features
+Authentication & Roles:
+
+User registration and login with JWT-based authentication.
+Admin and user roles with restricted access.
+Expense Management:
+
+Add, edit, and delete expenses.
+Fetch and sync expenses from TD Bank using APIs.
+Auto-categorize expenses using predefined rules or algorithms.
+Filtering and Sorting:
+
+Query expenses by date, category, or amount.
+Pagination and sorting for large datasets.
+Export:
+
+Export expenses as CSV or PDF.
+### Future Features
+AI-based tools for personalized financial suggestions and decision-making.
+Saving goals tracker.
 
 
 ## Tech Stack
