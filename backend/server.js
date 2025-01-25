@@ -14,12 +14,16 @@ app.use(express.json());
 //------------------------ Routes ---------------------//
 const authRoutes = require('./routes/auth');
 const protectedRoutes = require('./routes/protected');
+const expenseRoutes = require('./routes/expense');
 
 // User Authentication
 app.use('/api/auth', authRoutes);
 
 // Protected Route
 app.use('/api/protected', protectedRoutes);
+
+// Expense Route
+app.use('/api/expense', expenseRoutes);
 
 
 // ------------------------ Routes ---------------------//
