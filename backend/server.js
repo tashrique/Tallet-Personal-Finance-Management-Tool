@@ -15,6 +15,10 @@ app.use(express.json());
 const authRoutes = require('./routes/auth');
 const protectedRoutes = require('./routes/protected');
 const expenseRoutes = require('./routes/expense');
+// Default
+app.get('/', (req, res) => {
+    res.send('API is running...');
+});
 
 // User Authentication
 app.use('/api/auth', authRoutes);

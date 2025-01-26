@@ -2,9 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary: #32b6d4;
+  --secondary: #011a2d;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -17,5 +23,19 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  /* font family roboto */
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+}
+
+.btn {
+  background-color: white;
+  border: none;
 }
