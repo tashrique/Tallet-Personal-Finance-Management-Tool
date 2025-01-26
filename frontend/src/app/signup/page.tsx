@@ -2,6 +2,7 @@
 import { useState } from "react";
 import api from "@/lib/api";
 import { useRouter } from "next/navigation";
+import { AxiosError } from "axios";
 
 export default function Signup() {
   const [signupName, setSignupName] = useState("");
@@ -26,8 +27,12 @@ export default function Signup() {
         setSuccess("Account created successfully! Redirecting to login...");
         setTimeout(() => router.push("/login"), 2000); // Redirect to login after 2 seconds
       }
-    } catch (error) {
-      setError(error.response?.data?.message || "Signup failed. Please try again.");
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && error.response) {
+        setError(error.response.data.message || "Signup failed.");
+      } else {
+        setError("An unexpected error occurred.");
+      }
     }
   };
 

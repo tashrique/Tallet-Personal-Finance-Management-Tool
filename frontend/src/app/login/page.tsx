@@ -2,6 +2,7 @@
 import { useState } from "react";
 import api from "@/lib/api";
 import { useRouter } from "next/navigation";
+import { AxiosError } from "axios";
 
 export default function Login() {
   const [loginEmail, setLoginEmail] = useState("");
@@ -22,8 +23,12 @@ export default function Login() {
         localStorage.setItem("token", res.data.token);
         router.push("/");
       }
-    } catch (error) {
-      setError(error.response.data.message || "Login failed.");
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && error.response) {
+        setError(error.response.data.message || "Login failed.");
+      } else {
+        setError("An unexpected error occurred.");
+      }
     }
   };
 
