@@ -1,101 +1,121 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
+import api from "@/lib/api";
+import { AxiosError } from "axios";
+import { ExpenseType } from "@/types/structs";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [expenses, setExpenses] = useState<ExpenseType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [form, setForm] = useState({
+    title: "",
+    amount: "",
+    category: "",
+    description: "",
+  });
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // Fetch expenses
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        const res = await api.get("/expense");
+        setExpenses(res.data);
+        setLoading(false);
+      } catch (err: unknown) {
+        if (err instanceof AxiosError && err.response) {
+          setError(err.response.data.message || "Failed to fetch expenses.");
+        } else {
+          setError("An unexpected error occurred.");
+        }
+        setLoading(false);
+      }
+    };
+    fetchExpenses();
+  }, []);
+
+  // Handle form input
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  // Add expense
+  const handleAddExpense = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const res = await api.post("/expense", form);
+      setExpenses([...expenses, res.data]);
+      setForm({ title: "", amount: "", category: "", description: "" }); // Clear the form
+    } catch (err: unknown) {
+      if (err instanceof AxiosError && err.response) {
+        setError(err.response.data.message || "Failed to add expense.");
+      } else {
+        setError("An unexpected error occurred.");
+      }
+    }
+  };
+
+  // Delete expense
+  const handleDeleteExpense = async (id: string) => {
+    try {
+      await api.delete(`/expense/${id}`);
+      setExpenses(expenses.filter((expense) => expense._id !== id));
+    } catch (err: unknown) {
+      if (err instanceof AxiosError && err.response) {
+        setError(err.response.data.message || "Failed to delete expense.");
+      } else {
+        setError("An unexpected error occurred.");
+      }
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-base-200 p-6">
+      <div className="container mx-auto max-w-4xl">
+        <h1 className="text-4xl font-bold text-center mb-6">Expense Dashboard</h1>
+
+        {/* Error Message */}
+        {error && <p className="text-red-500 text-center">{error}</p>}
+
+        {/* Add Expense Form */}
+        <div className="card bg-base-100 shadow-lg mb-6 p-6">
+          <h2 className="text-2xl font-bold mb-4">Add Expense</h2>
+          <form onSubmit={handleAddExpense} className="grid gap-4">
+            <input type="text" name="title" placeholder="Title" className="input input-bordered" value={form.title} onChange={handleInputChange} required />
+            <input type="number" name="amount" placeholder="Amount" className="input input-bordered" value={form.amount} onChange={handleInputChange} required />
+            <input type="text" name="category" placeholder="Category" className="input input-bordered" value={form.category} onChange={handleInputChange} />
+            <textarea name="description" placeholder="Description" className="textarea textarea-bordered" value={form.description} onChange={handleInputChange}></textarea>
+            <button className="btn btn-primary">Add Expense</button>
+          </form>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* Expense List */}
+        <div className="card bg-base-100 shadow-lg p-6">
+          <h2 className="text-2xl font-bold mb-4">Your Expenses</h2>
+          {loading ? (
+            <p>Loading...</p>
+          ) : expenses.length > 0 ? (
+            <ul className="space-y-4">
+              {expenses.map((expense) => (
+                <li key={expense._id} className="flex justify-between items-center bg-gray-100 p-4 rounded-lg">
+                  <div>
+                    <h3 className="text-lg font-bold">{expense.title}</h3>
+                    <p>Amount: ${expense.amount}</p>
+                    <p>Category: {expense.category}</p>
+                    <p>Description: {expense.description || "N/A"}</p>
+                  </div>
+                  <button className="btn btn-error" onClick={() => handleDeleteExpense(expense._id)}>
+                    Delete
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No expenses found. Add your first expense!</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
